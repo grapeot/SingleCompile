@@ -77,9 +77,22 @@ function! SingleCompile#templates#cpp#Initialize()
                     \g:SingleCompile_common_run_command)
         call SingleCompile#SetOutfile('cpp', 'bcc', g:SingleCompile_common_out_file)
     endif
-    call SingleCompile#SetCompilerTemplate('cpp', 'g++',
+    if has("unix")
+        let s:uname = system("uname")
+        if s:uname == "Darwin\n"
+            call SingleCompile#SetCompilerTemplate('cpp', 'g++',
+                \'GNU C++ Compiler', 'g++', '-std=c++11 -o $(FILE_TITLE)$',
+                \g:SingleCompile_common_run_command)
+        else
+            call SingleCompile#SetCompilerTemplate('cpp', 'g++',
                 \'GNU C++ Compiler', 'g++', '-g -std=c++11 -o $(FILE_TITLE)$',
                 \g:SingleCompile_common_run_command)
+        endif
+    else 
+        call SingleCompile#SetCompilerTemplate('cpp', 'g++',
+            \'GNU C++ Compiler', 'g++', '-g -std=c++11 -o $(FILE_TITLE)$',
+            \g:SingleCompile_common_run_command)
+    endif
     call SingleCompile#SetCompilerTemplateByDict('cpp', 'g++', {
                 \ 'pre-do'  : function('SingleCompile#PredoGcc'),
                 \ 'out-file': g:SingleCompile_common_out_file,
